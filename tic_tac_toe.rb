@@ -1,119 +1,130 @@
-LINES = [
-  [0,1,2],
-  [3,4,5],
-  [6,7,8],
-  [0,3,6],
-  [1,4,7],
-  [2,5,8],
-  [0,4,8],
-  [2,4,6]
-]
+module TicTacToe
+  LINES = [
+    [1,2,3],
+    [4,5,6],
+    [7,8,9],
+    [1,4,7],
+    [2,5,8],
+    [3,6,9],
+    [1,5,9],
+    [3,5,7]
+  ]
 
-class Game
-  def initialize(player1, player2)
-    @board = Array.new(9)
+  class Game
+    def initialize(player1, player2)
+      @board = Array.new(10)
 
-    # the board looks like this:
-    #  0 | 1 | 2
-    # ---+---+---
-    #  3 | 4 | 5
-    # ---+---+---
-    #  6 | 7 | 8
+      # the board looks like this:
+      #  1 | 2 | 3
+      # ---+---+---
+      #  4 | 5 | 6
+      # ---+---+---
+      #  7 | 8 | 9
 
-    @current_player_id = 0
-    @players = [player1 = Player.new(self, 'X'), player2 = Player.new(self, 'O')]
-    puts "#{current_player} goes first."
-  end
+      # spot 0 is skipped to easier differentiate between 'O' and 0 during gameplay
 
-  attr_reader :board, current_player_id
+      @current_player_id = 0
+      @players = [player1 = Player.new(self, 'X'), player2 = Player.new(self, 'O')]
+      puts "#{current_player} goes first."
+    end
 
-  def play
-    # code to run the actual game
+    attr_reader :board, :current_player_id
 
-    # check current_player
-    # ask current_player to select_position
-    # update board with selection
+    def play
+      loop do
+        place_marker(current_player)
 
-    # repeat
-  end
-end
+        if winner?(current_player)
+          puts "#{current_player} wins!"
+          print_board
+          return
+        elsif board_full?
+          puts "It's a draw."
+          print_board
+          return
+        end
 
-def free_positions
-  # determine which positions are still available
-  (0..8).select { |position| @board[position].nil?}
-end
+        swap_players
+      end
+    end
 
-def place_marker
-  # mark the place chosen with current_player's marker
-  position = player.select_position
-  puts "#{player} selects #{player.marker} position #{position}"
-end
+    def print_board
+      column_separator = ' | '
+      row_separator = '---+---+---'
 
-def winner?
-  # determine who the winner of the game is
-  LINES.any? do |line|
-    line.all? { |position| @board[position] === player.marker}
-  end
-end
+      position_label = lambda{ |position| @board[position] ? @board[position] : position }
+      row_display = lambda{ |row| row.map(&position_label).join(column_separator) }
+      row_positions = [ [1,2,3], [4,5,6], [7,8,9] ]
+      display_rows = row_positions.map(&row_display)
 
-def board_full?
-  # check if the board if full
-  free_positions.empty?
-end
+      puts "\n " + display_rows.join("\n#{row_separator}\n ") + "\n\n"
+    end
 
-def other_player
-  1 - @current_player_id
-end
+    def free_positions
+      (1..9).select { |position| @board[position].nil?}
+    end
 
-def swap_players
-  @current_player_id = other_player_id
-end
+    private
 
-def current_player
-  # check who the current player is
-  @players[current_player_id]
-end
+    def place_marker(player)
+      position = player.select_position
+      puts "\n#{player} selects position #{position}"
+      @board[position] = player.marker
+    end
 
-def opponent
-  @players[other_player_id]
-end
+    def winner?(player)
+      LINES.any? do |line|
+        line.all? { |position| @board[position] === player.marker}
+      end
+    end
 
-def turn_number
-  # keep track of number of turns remaining
-  10 - free_positions.size
-end
+    def board_full?
+      free_positions.empty?
+    end
 
-def print_board
-  # print the board after each turn
+    def other_player_id
+      1 - @current_player_id
+    end
 
-  # example of what the board looks like
-  # fill in O's with player's markers
-  puts " O | O | O"
-  puts "---+---+---"
-  puts " O | O | O"
-  puts "---+---+---"
-  puts " O | O | O"
-end
+    def swap_players
+      @current_player_id = other_player_id
+    end
 
-class Player
-  attr_reader :marker
+    def current_player
+      @players[current_player_id]
+    end
 
-  def initialize(game, marker)
-    @game = game
-    @marker = marker
-  end
-
-  def select_position
+    def opponent
+      @players[other_player_id]
+    end
 
   end
+
+  class Player
+    attr_reader :marker
+
+    def initialize(game, marker)
+      @game = game
+      @marker = marker
+    end
+
+    def select_position
+      @game.print_board
+      loop do
+        puts "Your turn, Player #{marker}!"
+        print "Select your position: "
+        selection = gets.chomp.to_i
+        return selection if @game.free_positions.include?(selection)
+        puts "Position #{selection} is not available. Try again."
+      end
+    end
+
+    def to_s
+      "Player #{marker}"
+    end
+  end
 end
 
-class Player1 < Player
-
-end
-
-class Player2 < Player
-
-end
+include TicTacToe
 
 Game.new(Player, Player).play
