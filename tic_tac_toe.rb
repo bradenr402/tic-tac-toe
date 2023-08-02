@@ -24,7 +24,7 @@ module TicTacToe
       # spot 0 is skipped to easier differentiate between 'O' and 0 during gameplay
 
       @current_player_id = 0
-      @players = [player1 = Player.new(self, 'X'), player2 = Player.new(self, 'O')]
+      @players = [player1.new(self, 'X'), player2.new(self, 'O')]
       puts "#{current_player} goes first."
     end
 
@@ -39,7 +39,7 @@ module TicTacToe
           print_board
           return
         elsif board_full?
-          puts "It's a draw."
+          puts "It's a draw!"
           print_board
           return
         end
