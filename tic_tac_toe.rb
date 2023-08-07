@@ -52,8 +52,8 @@ module TicTacToe
       column_separator = ' | '
       row_separator = '---+---+---'
 
-      position_label = lambda { |position| @board[position] ? @board[position] : position }
-      row_display = lambda { |row| row.map(&position_label).join(column_separator) }
+      position_label = ->(position) { @board[position] ? @board[position] : position }
+      row_display = ->(row) { row.map(&position_label).join(column_separator) }
       row_positions = [ [1,2,3], [4,5,6], [7,8,9] ]
       display_rows = row_positions.map(&row_display)
 
