@@ -11,7 +11,7 @@ module TicTacToe
   ]
 
   class Game
-    def initialize(player1, player2)
+    def initialize
       @board = Array.new(10)
 
       # the board looks like this:
@@ -24,7 +24,7 @@ module TicTacToe
       # spot 0 is skipped to easier differentiate between 'O' and 0 during gameplay
 
       @current_player_id = 0
-      @players = [player1.new(self, 'X'), player2.new(self, 'O')]
+      @players = [Player.new(self, 'X'), Player.new(self, 'O')]
       puts "#{current_player} goes first."
       play
     end
@@ -133,4 +133,4 @@ end
 
 include TicTacToe
 
-Game.new(Player, Player)
+Game.new
