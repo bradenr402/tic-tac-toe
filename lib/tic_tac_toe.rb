@@ -68,7 +68,7 @@ module TicTacToe
 
     def winner?(player)
       LINES.any? do |line|
-        line.all? { |position| @board[position] === player.marker}
+        line.all? { |position| @board[position] == player.marker}
       end
     end
 
